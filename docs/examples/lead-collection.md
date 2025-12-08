@@ -24,7 +24,6 @@ Initial Message: Great! I'd be happy to connect you with our sales team. Let me 
 | Field | Value |
 |-------|-------|
 | Step Name | ask_name |
-| Order | 1 |
 | Message | What's your name? |
 | Message Type | Text |
 | Input Type | Text |
@@ -35,7 +34,6 @@ Initial Message: Great! I'd be happy to connect you with our sales team. Let me 
 | Field | Value |
 |-------|-------|
 | Step Name | ask_email |
-| Order | 2 |
 | Message | Thanks {customer_name}! What's your email address? |
 | Message Type | Text |
 | Input Type | Email |
@@ -46,7 +44,6 @@ Initial Message: Great! I'd be happy to connect you with our sales team. Let me 
 | Field | Value |
 |-------|-------|
 | Step Name | ask_company |
-| Order | 3 |
 | Message | And which company are you from? |
 | Message Type | Text |
 | Input Type | Text |
@@ -57,7 +54,6 @@ Initial Message: Great! I'd be happy to connect you with our sales team. Let me 
 | Field | Value |
 |-------|-------|
 | Step Name | ask_interest |
-| Order | 4 |
 | Message | What product are you interested in? |
 | Message Type | Text |
 | Input Type | Select |

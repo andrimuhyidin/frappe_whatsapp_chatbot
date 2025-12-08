@@ -24,7 +24,6 @@ Initial Message: I can help you check your order status.
 | Field | Value |
 |-------|-------|
 | Step Name | ask_order_id |
-| Order | 1 |
 | Message | Please enter your Order ID (e.g., SAL-ORD-2024-00001) |
 | Message Type | Text |
 | Input Type | Text |
@@ -35,7 +34,6 @@ Initial Message: I can help you check your order status.
 | Field | Value |
 |-------|-------|
 | Step Name | show_status |
-| Order | 2 |
 | Message | Checking order... |
 | Message Type | Script |
 | Input Type | None |

@@ -30,7 +30,7 @@ Flows allow multi-step conversations to collect information from users.
 
 ## Flow Steps
 
-Each step in the flow is configured in the Steps table.
+Each step in the flow is configured in the Steps table. **Drag and drop rows to reorder steps.**
 
 ### Step Fields
 

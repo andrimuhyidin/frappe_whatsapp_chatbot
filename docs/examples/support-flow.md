@@ -19,12 +19,13 @@ Initial Message: I'm here to help! Let me route you to the right team.
 
 ### Steps
 
+Steps are ordered by drag-and-drop. Use **Conditional Next** and **Next Step** to control flow between branches.
+
 #### Step 1: Ask Issue Type
 
 | Field | Value |
 |-------|-------|
 | Step Name | ask_issue_type |
-| Order | 1 |
 | Message | What type of issue do you have? |
 | Message Type | Text |
 | Input Type | Select |
@@ -49,7 +50,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | billing_info |
-| Order | 10 |
 | Message | For billing inquiries:\n\n📧 Email: billing@company.com\n📞 Phone: 1800-123-4567\n⏰ Mon-Fri, 9 AM - 6 PM\n\nOr describe your billing issue and I'll create a ticket: |
 | Message Type | Text |
 | Input Type | Text |
@@ -63,7 +63,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | tech_details |
-| Order | 20 |
 | Message | Please describe your technical issue in detail: |
 | Message Type | Text |
 | Input Type | Text |
@@ -75,7 +74,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | tech_urgency |
-| Order | 21 |
 | Message | How urgent is this issue? |
 | Message Type | Text |
 | Input Type | Select |
@@ -90,7 +88,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | order_lookup |
-| Order | 30 |
 | Message | Please enter your Order ID: |
 | Message Type | Text |
 | Input Type | Text |
@@ -102,7 +99,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | order_issue_desc |
-| Order | 31 |
 | Message | What's the issue with order {order_id}? |
 | Message Type | Text |
 | Input Type | Text |
@@ -116,7 +112,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | general_query |
-| Order | 40 |
 | Message | Please describe your question: |
 | Message Type | Text |
 | Input Type | Text |
@@ -130,7 +125,6 @@ Initial Message: I'm here to help! Let me route you to the right team.
 | Field | Value |
 |-------|-------|
 | Step Name | create_ticket |
-| Order | 100 |
 | Message | Creating ticket... |
 | Message Type | Script |
 | Input Type | None |
@@ -224,6 +218,15 @@ Completion Message: Is there anything else I can help with?
                         │    (Script)     │
                         └─────────────────┘
 ```
+
+## Note on Step Ordering
+
+With branching flows like this, the row order in the UI doesn't matter as much because:
+- The first step is always executed first
+- **Conditional Next** and **Next Step** control which step runs next
+- Steps without explicit next step go to the next row
+
+You can drag steps to organize them logically in the UI.
 
 ## Testing Scenarios
 
