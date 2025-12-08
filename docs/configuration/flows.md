@@ -2,6 +2,10 @@
 
 Flows allow multi-step conversations to collect information from users.
 
+![Chatbot Flow](../assets/chatbot_flow_1.png)
+
+![Flow Steps](../assets/chatbot_flow_2.png)
+
 ## Creating a Flow
 
 1. Go to **WhatsApp Chatbot Flow** → **+ Add**

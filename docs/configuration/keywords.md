@@ -2,6 +2,8 @@
 
 Keyword replies allow you to configure automatic responses based on message content.
 
+![Keyword Reply](../assets/keyword_reply.png)
+
 ## Creating a Keyword Reply
 
 1. Go to **WhatsApp Keyword Reply** → **+ Add**

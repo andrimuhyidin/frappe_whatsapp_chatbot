@@ -2,6 +2,8 @@
 
 The main configuration for the chatbot is in the **WhatsApp Chatbot** single DocType.
 
+![Chatbot Settings](../assets/chatbot.png)
+
 ## General Settings
 
 | Setting | Description |

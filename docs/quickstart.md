@@ -10,7 +10,7 @@ Get your chatbot up and running in 5 minutes.
 4. Set a **Default Response** message (shown when no rules match)
 5. Click **Save**
 
-![Enable Chatbot](assets/enable-chatbot.png)
+![Chatbot Settings](assets/chatbot.png)
 
 ## Step 2: Create Your First Keyword Reply
 
@@ -26,6 +26,8 @@ Get your chatbot up and running in 5 minutes.
 ## Step 3: Test It
 
 Send "hello" to your WhatsApp Business number. You should receive the automated reply!
+
+![Chat Response](assets/chat_response.png)
 
 ## What's Next?
 

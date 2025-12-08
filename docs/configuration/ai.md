@@ -2,9 +2,13 @@
 
 Use AI-powered responses as a fallback when no keyword or flow matches.
 
+![AI Response](../assets/ai_response.png)
+
 ## Setup
 
 ### 1. Install Dependencies
+
+Dependencies are installed automatically with the app. If needed manually:
 
 ```bash
 # For OpenAI
@@ -12,6 +16,9 @@ pip install openai
 
 # For Anthropic Claude
 pip install anthropic
+
+# For Google Gemini
+pip install google-generativeai
 ```
 
 ### 2. Configure in Settings
@@ -27,7 +34,7 @@ pip install anthropic
 
 | Setting | Description | Default |
 |---------|-------------|---------|
-| **AI Provider** | OpenAI, Anthropic, or Custom | - |
+| **AI Provider** | OpenAI, Anthropic, Google, or Custom | - |
 | **AI API Key** | Your API key | - |
 | **AI Model** | Model to use | gpt-4o-mini |
 | **Max Tokens** | Maximum response length | 500 |
@@ -45,9 +52,31 @@ pip install anthropic
 - `claude-3-sonnet-20240229` - Balanced
 - `claude-3-opus-20240229` - Most capable
 
+**Google:**
+- `gemini-2.0-flash` - Fast, free tier available
+- `gemini-2.5-flash` - Latest flash model
+- `gemini-2.5-pro` - Most capable
+
 ## System Prompt
 
-The system prompt tells the AI how to behave. Example:
+The system prompt tells the AI how to behave.
+
+### Recommended System Prompt
+
+Use this prompt to prevent the AI from claiming to perform actions it cannot do:
+
+```
+You are a helpful customer service assistant. Be concise, friendly, and professional.
+
+IMPORTANT RULES:
+- You can ONLY provide information from the context given to you
+- You CANNOT perform any actions like sending emails, resetting passwords, creating orders, etc.
+- If a user asks you to DO something (reset password, send email, place order), tell them you cannot perform actions and guide them to the appropriate channel
+- Never claim to have done something you didn't do
+- If you don't know something, say so honestly
+```
+
+### Basic Example
 
 ```
 You are a helpful customer service assistant for ABC Company.
