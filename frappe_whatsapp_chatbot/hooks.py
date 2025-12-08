@@ -3,7 +3,7 @@ app_title = "Frappe WhatsApp Chatbot"
 app_publisher = "Shridhar Patil"
 app_description = "WhatsApp Chatbot for Frappe with keyword replies, conversation flows, and optional AI"
 app_email = "shrip.dev@gmail.com"
-app_license = "MIT"
+app_license = "MIT with Commons Clause"
 required_apps = ["frappe", "frappe_whatsapp"]
 
 # Document Events

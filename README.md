@@ -24,7 +24,7 @@ A comprehensive chatbot solution for Frappe WhatsApp integration. Supports keywo
 
 ```bash
 # Inside your Frappe bench
-bench get-app https://github.com/your-repo/frappe_whatsapp_chatbot
+bench get-app https://github.com/shridarpatil/frappe_whatsapp_chatbot
 bench --site your-site install-app frappe_whatsapp_chatbot
 ```
 
@@ -402,7 +402,7 @@ Filter by "WhatsApp Chatbot" to see chatbot-specific errors.
 
 ## License
 
-MIT
+MIT License with Commons Clause - Free to use, modify, and distribute, but cannot be sold commercially. See [LICENSE](LICENSE) for details.
 
 ## Author
 
