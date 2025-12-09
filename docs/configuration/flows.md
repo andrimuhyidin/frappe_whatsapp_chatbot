@@ -57,6 +57,33 @@ Each step in the flow is configured in the Steps table. **Drag and drop rows to 
 | **Phone** | Phone number | 10-15 digits, optional + prefix |
 | **Date** | Date input | Common formats (DD-MM-YYYY, etc.) |
 | **Select** | Choice from options | Must match one of the options |
+| **Button** | Interactive buttons | User must tap a button |
+
+### Buttons
+
+Use interactive buttons for yes/no questions or quick choices (max 3 buttons).
+
+1. Set **Input Type** to `Button`
+2. Add buttons in JSON format:
+
+```json
+[
+  {"id": "yes", "title": "Yes"},
+  {"id": "no", "title": "No"}
+]
+```
+
+- `id`: Value stored when user taps (use in **Conditional Next**)
+- `title`: Text shown on the button (max 20 chars)
+
+Example with conditional navigation:
+```json
+// Buttons
+[{"id": "continue", "title": "Continue"}, {"id": "cancel", "title": "Cancel"}]
+
+// Conditional Next
+{"continue": "next_step", "cancel": "cancel_step"}
+```
 
 ### Message Type: Script
 

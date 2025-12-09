@@ -64,7 +64,7 @@
             "fieldtype": "Select",
             "in_list_view": 1,
             "label": "Input Type",
-            "options": "None\nText\nNumber\nEmail\nPhone\nDate\nSelect",
+            "options": "None\nText\nNumber\nEmail\nPhone\nDate\nSelect\nButton",
             "default": "Text",
             "description": "Type of input expected from user"
         },
@@ -77,10 +77,10 @@
         },
         {
             "fieldname": "buttons",
-            "fieldtype": "JSON",
+            "fieldtype": "Code",
             "label": "Buttons",
-            "hidden": 1,
-            "description": "JSON array of buttons: [{\"id\": \"btn_1\", \"title\": \"Button 1\"}]"
+            "options": "JSON",
+            "description": "JSON array of buttons (max 3): [{\"id\": \"yes\", \"title\": \"Yes\"}, {\"id\": \"no\", \"title\": \"No\"}]"
         },
         {
             "fieldname": "validation_regex",

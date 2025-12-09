@@ -34,13 +34,16 @@ class WhatsAppChatbotFlow(Document):
                 except json.JSONDecodeError:
                     frappe.throw(f"Invalid JSON in conditional_next for step {step.step_name}")
 
-            # Validate buttons JSON
-            if step.buttons:
+            # Validate buttons JSON only for Button input type
+            if step.input_type == "Button":
                 import json
+                # Skip empty or default values
+                if not step.buttons or step.buttons in ("{}", "[]", ""):
+                    frappe.throw(f"Buttons are required for step {step.step_name}")
                 try:
-                    buttons = json.loads(step.buttons)
-                    if not isinstance(buttons, list):
-                        frappe.throw(f"Buttons must be a JSON array for step {step.step_name}")
+                    buttons = json.loads(step.buttons) if isinstance(step.buttons, str) else step.buttons
+                    if not isinstance(buttons, list) or not buttons:
+                        frappe.throw(f"Buttons must be a non-empty JSON array for step {step.step_name}")
                 except json.JSONDecodeError:
                     frappe.throw(f"Invalid JSON in buttons for step {step.step_name}")
 

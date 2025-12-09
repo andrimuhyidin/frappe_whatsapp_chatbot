@@ -227,9 +227,11 @@ class FlowEngine:
         """Validate user input against step requirements."""
         input_type = step.input_type
 
-        if input_type == "Button" and button_payload:
-            # Button responses are always valid
-            return True, None
+        if input_type == "Button":
+            # Button responses are always valid (payload or text)
+            if button_payload or user_input:
+                return True, None
+            return False, "Please tap a button to continue."
 
         if input_type == "None":
             return True, None
@@ -339,15 +341,11 @@ class FlowEngine:
         if step.input_type == "Button" and step.buttons:
             buttons = parse_json(step.buttons, [])
             if buttons:
-                # Format for WhatsApp interactive message
                 return {
                     "message": message,
                     "content_type": "interactive",
-                    "interactive_type": "button",
                     "buttons": json.dumps(buttons) if isinstance(buttons, list) else buttons
                 }
-            else:
-                pass
 
         # Add options hint for Select type
         if step.input_type == "Select" and step.options:
