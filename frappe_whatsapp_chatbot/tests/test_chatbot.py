@@ -149,3 +149,156 @@ class TestInputValidation(IntegrationTestCase):
         number = "abc"
         cleaned = number.replace(",", "").replace(" ", "")
         self.assertIsNone(re.match(r"^-?\d+\.?\d*$", cleaned))
+
+
+class TestWhatsAppFlowIntegration(IntegrationTestCase):
+    """Test WhatsApp Flow integration with chatbot."""
+
+    def test_flow_step_has_whatsapp_flow_input_type(self):
+        """Test that WhatsApp Flow Step has WhatsApp Flow as input type option."""
+        meta = frappe.get_meta("WhatsApp Flow Step")
+        input_type_field = meta.get_field("input_type")
+        self.assertIsNotNone(input_type_field)
+        self.assertIn("WhatsApp Flow", input_type_field.options)
+
+    def test_flow_step_has_whatsapp_flow_field(self):
+        """Test that WhatsApp Flow Step has whatsapp_flow link field."""
+        meta = frappe.get_meta("WhatsApp Flow Step")
+        flow_field = meta.get_field("whatsapp_flow")
+        self.assertIsNotNone(flow_field)
+        self.assertEqual(flow_field.fieldtype, "Link")
+        self.assertEqual(flow_field.options, "WhatsApp Flow")
+
+    def test_flow_response_processing(self):
+        """Test processing of WhatsApp Flow responses."""
+        from frappe_whatsapp_chatbot.chatbot.flow_engine import FlowEngine
+
+        # Create flow engine
+        flow_engine = FlowEngine("919876543210", None)
+
+        # Test flow response processing
+        flow_response = {
+            "name": "John Doe",
+            "mobile": "9876543210",
+            "date": "2025-01-15"
+        }
+
+        # Mock step with field mapping
+        class MockStep:
+            flow_field_mapping = '{"client_name": "name", "phone": "mobile", "booking_date": "date"}'
+
+        # Mock session
+        class MockSession:
+            session_data = "{}"
+
+        session_data = flow_engine.process_flow_response(
+            MockStep(),
+            MockSession(),
+            flow_response
+        )
+
+        # Verify fields are mapped correctly
+        self.assertEqual(session_data.get("client_name"), "John Doe")
+        self.assertEqual(session_data.get("phone"), "9876543210")
+        self.assertEqual(session_data.get("booking_date"), "2025-01-15")
+
+    def test_flow_response_processing_no_mapping(self):
+        """Test flow response processing without field mapping."""
+        from frappe_whatsapp_chatbot.chatbot.flow_engine import FlowEngine
+
+        flow_engine = FlowEngine("919876543210", None)
+
+        flow_response = {
+            "name": "Jane Doe",
+            "email": "jane@example.com"
+        }
+
+        class MockStep:
+            flow_field_mapping = None
+
+        class MockSession:
+            session_data = "{}"
+
+        session_data = flow_engine.process_flow_response(
+            MockStep(),
+            MockSession(),
+            flow_response
+        )
+
+        # Without mapping, fields should be stored as-is
+        self.assertEqual(session_data.get("name"), "Jane Doe")
+        self.assertEqual(session_data.get("email"), "jane@example.com")
+
+    def test_chatbot_processor_handles_flow_content_type(self):
+        """Test that ChatbotProcessor handles flow content type."""
+        from frappe_whatsapp_chatbot.chatbot.processor import ChatbotProcessor
+
+        message_data = {
+            "name": "test_msg",
+            "from": "919876543210",
+            "message": "Flow completed",
+            "content_type": "flow",
+            "whatsapp_account": None,
+            "type": "Incoming",
+            "flow_response": '{"name": "Test User", "phone": "1234567890"}'
+        }
+
+        processor = ChatbotProcessor(message_data)
+
+        # Verify flow response is parsed
+        self.assertIsNotNone(processor.flow_response)
+        self.assertEqual(processor.flow_response.get("name"), "Test User")
+
+    def test_flow_engine_build_step_message_for_whatsapp_flow(self):
+        """Test that FlowEngine builds correct message for WhatsApp Flow steps."""
+        from frappe_whatsapp_chatbot.chatbot.flow_engine import FlowEngine
+
+        flow_engine = FlowEngine("919876543210", None)
+
+        # Mock step with WhatsApp Flow input type
+        class MockStep:
+            step_name = "collect_info"
+            message = "Please fill out the booking form"
+            input_type = "WhatsApp Flow"
+            whatsapp_flow = "Test Booking Flow"
+            flow_cta = "Open Booking Form"
+            flow_screen = "booking"
+            message_type = "Text"
+            response_script = None
+            buttons = None
+            options = None
+
+        class MockSession:
+            session_data = "{}"
+
+        response = flow_engine.build_step_message(MockStep(), {}, MockSession())
+
+        # Response should be a dict with flow message structure
+        self.assertIsInstance(response, dict)
+        self.assertEqual(response.get("content_type"), "flow")
+        self.assertEqual(response.get("flow"), "Test Booking Flow")
+        self.assertEqual(response.get("flow_cta"), "Open Booking Form")
+
+
+class TestFlowEngineValidation(IntegrationTestCase):
+    """Test flow engine input validation for WhatsApp Flow."""
+
+    def test_whatsapp_flow_validation_always_valid(self):
+        """Test that WhatsApp Flow input type validation always passes.
+
+        WhatsApp Flow responses are validated by WhatsApp itself,
+        so our validation should always return True.
+        """
+        from frappe_whatsapp_chatbot.chatbot.flow_engine import FlowEngine
+
+        flow_engine = FlowEngine("919876543210", None)
+
+        class MockStep:
+            input_type = "WhatsApp Flow"
+            validation_regex = None
+            validation_error = None
+
+        # Any input should pass for WhatsApp Flow type
+        self.assertTrue(flow_engine.validate_input(MockStep(), "any input"))
+        self.assertTrue(flow_engine.validate_input(MockStep(), ""))
+        self.assertTrue(flow_engine.validate_input(MockStep(), None))

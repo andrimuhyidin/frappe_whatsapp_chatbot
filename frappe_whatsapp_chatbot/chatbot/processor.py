@@ -14,7 +14,7 @@ class ChatbotProcessor:
         Initialize with message data dict (not document).
 
         Args:
-            message_data: dict with keys: name, from, message, content_type, whatsapp_account, type
+            message_data: dict with keys: name, from, message, content_type, whatsapp_account, type, flow_response
         """
         self.message_data = message_data
         self.message_name = message_data.get("name")
@@ -23,10 +23,24 @@ class ChatbotProcessor:
         self.content_type = message_data.get("content_type") or "text"
         self.account = message_data.get("whatsapp_account")
         self.button_payload = None
+        self.flow_response = None
 
         # Extract button payload if this is a button response
         if self.content_type == "button":
             self.button_payload = self.message_text
+
+        # Extract flow response if this is a flow response
+        if self.content_type == "flow":
+            flow_response_data = message_data.get("flow_response")
+            if flow_response_data:
+                import json
+                if isinstance(flow_response_data, str):
+                    try:
+                        self.flow_response = json.loads(flow_response_data)
+                    except json.JSONDecodeError:
+                        self.flow_response = {}
+                else:
+                    self.flow_response = flow_response_data
 
         self.settings = None
 
@@ -54,8 +68,8 @@ class ChatbotProcessor:
         if not settings:
             return False
 
-        # Only process text and button messages
-        if self.content_type not in ["text", "button"]:
+        # Only process text, button, and flow messages
+        if self.content_type not in ["text", "button", "flow"]:
             return False
 
         # Check if this account is configured for chatbot
@@ -101,11 +115,18 @@ class ChatbotProcessor:
         # 1. Check for active flow session
         active_session = session_mgr.get_active_session()
         if active_session:
-            response = flow_engine.process_input(
-                active_session,
-                self.message_text,
-                self.button_payload
-            )
+            # If this is a flow response, process the flow data
+            if self.content_type == "flow" and self.flow_response:
+                response = self.process_flow_response_in_session(
+                    active_session,
+                    flow_engine
+                )
+            else:
+                response = flow_engine.process_input(
+                    active_session,
+                    self.message_text,
+                    self.button_payload
+                )
             if response:
                 self.send_response(response)
                 return
@@ -193,6 +214,62 @@ class ChatbotProcessor:
                 "WhatsApp Chatbot Error"
             )
 
+    def process_flow_response_in_session(self, session, flow_engine):
+        """Process a WhatsApp Flow response within an active chatbot session.
+
+        Args:
+            session: Active WhatsApp Chatbot Session
+            flow_engine: FlowEngine instance
+
+        Returns:
+            Response message to send
+        """
+        import json
+
+        try:
+            flow = frappe.get_doc("WhatsApp Chatbot Flow", session.current_flow)
+
+            # Find current step
+            current_step = None
+            for step in flow.steps:
+                if step.step_name == session.current_step:
+                    current_step = step
+                    break
+
+            if not current_step:
+                return flow_engine.complete_flow(session, flow)
+
+            # Verify this step expects a WhatsApp Flow response
+            if current_step.input_type != "WhatsApp Flow":
+                # Unexpected flow response, treat as regular text input
+                return flow_engine.process_input(
+                    session,
+                    self.message_text,
+                    self.button_payload
+                )
+
+            # Process the flow response and map fields to session data
+            session_data = flow_engine.process_flow_response(
+                current_step,
+                session,
+                self.flow_response
+            )
+            session.session_data = json.dumps(session_data)
+
+            # Log the flow response
+            session.add_message("Incoming", f"Flow completed: {self.message_text}", current_step.step_name)
+
+            # Continue to next step (same logic as process_input)
+            return flow_engine.process_input(
+                session,
+                self.message_text,  # Use summary as input
+                None
+            )
+
+        except Exception as e:
+            frappe.log_error(f"process_flow_response_in_session error: {str(e)}")
+            return "An error occurred processing your form. Please try again."
+
     def build_keyword_response(self, keyword_doc):
         """Build response from keyword match."""
         if keyword_doc.response_type == "Text":
@@ -269,9 +346,9 @@ def process_incoming_message(doc, method=None):
         if not doc_name or doc_name in _processing_messages:
             return
 
-        # Only process text and button content types
+        # Only process text, button, and flow content types
         content_type = getattr(doc, "content_type", None)
-        if content_type not in ["text", "button"]:
+        if content_type not in ["text", "button", "flow"]:
             return
 
         # Quick check if chatbot is enabled (without full initialization)
@@ -291,7 +368,8 @@ def process_incoming_message(doc, method=None):
             "message": getattr(doc, "message", "") or "",
             "content_type": content_type or "text",
             "whatsapp_account": getattr(doc, "whatsapp_account", None),
-            "type": "Incoming"
+            "type": "Incoming",
+            "flow_response": getattr(doc, "flow_response", None)
         }
 
         # Mark as being processed to prevent loops

@@ -233,6 +233,13 @@ class FlowEngine:
                 return True, None
             return False, "Please tap a button to continue."
 
+        if input_type == "WhatsApp Flow":
+            # WhatsApp Flow responses are handled via flow_response
+            # The user_input will be the summary message from the flow response
+            if user_input:
+                return True, None
+            return False, "Please complete the form."
+
         if input_type == "None":
             return True, None
 
@@ -346,6 +353,16 @@ class FlowEngine:
                     "content_type": "interactive",
                     "buttons": json.dumps(buttons) if isinstance(buttons, list) else buttons
                 }
+
+        # Handle WhatsApp Flow
+        if step.input_type == "WhatsApp Flow" and step.whatsapp_flow:
+            return {
+                "message": message,
+                "content_type": "flow",
+                "flow": step.whatsapp_flow,
+                "flow_cta": step.flow_cta or "Open Form",
+                "flow_screen": step.flow_screen or None
+            }
 
         # Add options hint for Select type
         if step.input_type == "Select" and step.options:
@@ -479,6 +496,41 @@ class FlowEngine:
             exec(script, eval_globals)
         except Exception as e:
             frappe.log_error(f"FlowEngine run_script error: {str(e)}")
+
+    def process_flow_response(self, step, session, flow_response):
+        """Process WhatsApp Flow response and map fields to session data.
+
+        Args:
+            step: The current flow step with flow_field_mapping
+            session: The chatbot session document
+            flow_response: Dict of field values from WhatsApp Flow
+
+        Returns:
+            Updated session_data dict
+        """
+        session_data = parse_json(session.session_data, {})
+
+        if not flow_response:
+            return session_data
+
+        # Get field mapping from step
+        field_mapping = parse_json(step.flow_field_mapping, {})
+
+        if field_mapping:
+            # Map flow fields to session variables based on mapping
+            for flow_field, session_var in field_mapping.items():
+                if flow_field in flow_response:
+                    session_data[session_var] = flow_response[flow_field]
+        else:
+            # No mapping defined, store all flow fields directly
+            for key, value in flow_response.items():
+                session_data[key] = value
+
+        # Also store the complete response if needed
+        if step.store_as:
+            session_data[step.store_as] = flow_response
+
+        return session_data
 
     def run_response_script(self, script, data, session):
         """Run script to generate dynamic response message.

@@ -14,6 +14,10 @@
         "response_script",
         "options",
         "buttons",
+        "whatsapp_flow",
+        "flow_cta",
+        "flow_screen",
+        "flow_field_mapping",
         "validation_regex",
         "validation_error",
         "next_step",
@@ -64,7 +68,7 @@
             "fieldtype": "Select",
             "in_list_view": 1,
             "label": "Input Type",
-            "options": "None\nText\nNumber\nEmail\nPhone\nDate\nSelect\nButton",
+            "options": "None\nText\nNumber\nEmail\nPhone\nDate\nSelect\nButton\nWhatsApp Flow",
             "default": "Text",
             "description": "Type of input expected from user"
         },
@@ -81,6 +85,36 @@
             "label": "Buttons",
             "options": "JSON",
             "description": "JSON array of buttons (max 3): [{\"id\": \"yes\", \"title\": \"Yes\"}, {\"id\": \"no\", \"title\": \"No\"}]"
+        },
+        {
+            "fieldname": "whatsapp_flow",
+            "fieldtype": "Link",
+            "label": "WhatsApp Flow",
+            "options": "WhatsApp Flow",
+            "depends_on": "eval:doc.input_type=='WhatsApp Flow'",
+            "description": "Select the WhatsApp Flow to send"
+        },
+        {
+            "fieldname": "flow_cta",
+            "fieldtype": "Data",
+            "label": "Flow Button Text",
+            "depends_on": "eval:doc.input_type=='WhatsApp Flow'",
+            "description": "Button text to open the flow (e.g., 'Fill Form')"
+        },
+        {
+            "fieldname": "flow_screen",
+            "fieldtype": "Data",
+            "label": "Starting Screen",
+            "depends_on": "eval:doc.input_type=='WhatsApp Flow'",
+            "description": "Screen ID to start from (optional, defaults to first screen)"
+        },
+        {
+            "fieldname": "flow_field_mapping",
+            "fieldtype": "Code",
+            "label": "Flow Field Mapping",
+            "options": "JSON",
+            "depends_on": "eval:doc.input_type=='WhatsApp Flow'",
+            "description": "Map flow fields to session variables: {\"flow_field\": \"session_variable\"}"
         },
         {
             "fieldname": "validation_regex",
