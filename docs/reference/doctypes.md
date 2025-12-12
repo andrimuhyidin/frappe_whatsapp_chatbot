@@ -166,6 +166,38 @@ Phone numbers to exclude.
 
 ---
 
+## WhatsApp Agent Transfer
+
+**Type:** DocType (List)
+
+Track conversations transferred to human agents. When active, chatbot stops auto-responding to the phone number.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| phone_number | Data | Customer's phone number |
+| whatsapp_account | Link | WhatsApp Account |
+| status | Select | Active/Resumed |
+| transferred_at | Datetime | When transferred |
+| agent | Link | Assigned user |
+| agent_name | Data | Agent's full name |
+| notes | Small Text | Transfer notes |
+| resumed_at | Datetime | When chatbot resumed |
+| resumed_by | Link | Who resumed |
+
+### Usage
+
+```python
+# Transfer to agent
+from frappe_whatsapp_chatbot.api import transfer_to_agent
+transfer_to_agent(phone_number="+919876543210", agent="agent@example.com")
+
+# Resume chatbot
+from frappe_whatsapp_chatbot.api import resume_chatbot
+resume_chatbot(phone_number="+919876543210")
+```
+
+---
+
 ## WhatsApp Session Message
 
 **Type:** Child Table (for Session)

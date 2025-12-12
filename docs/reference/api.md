@@ -157,6 +157,89 @@ def complete_flow(self, session, flow):
     # ... existing code
 ```
 
+## Agent Transfer API
+
+Transfer conversations to human agents and resume chatbot when done.
+
+### Transfer to Agent
+
+```python
+import frappe
+
+# Via API
+frappe.call(
+    "frappe_whatsapp_chatbot.api.transfer_to_agent",
+    phone_number="+919876543210",
+    agent="agent@example.com",  # Optional
+    notes="Customer needs billing help"  # Optional
+)
+
+# Via Python
+from frappe_whatsapp_chatbot.api import transfer_to_agent
+result = transfer_to_agent(
+    phone_number="+919876543210",
+    agent="agent@example.com"
+)
+# Returns: {"status": "transferred", "name": "AGT-...", ...}
+```
+
+### Resume Chatbot
+
+```python
+# Via API
+frappe.call(
+    "frappe_whatsapp_chatbot.api.resume_chatbot",
+    phone_number="+919876543210"
+)
+
+# Via Python
+from frappe_whatsapp_chatbot.api import resume_chatbot
+result = resume_chatbot(phone_number="+919876543210")
+# Returns: {"status": "resumed", ...}
+```
+
+### Check Transfer Status
+
+```python
+from frappe_whatsapp_chatbot.api import is_transferred
+
+result = is_transferred(phone_number="+919876543210")
+if result["is_transferred"]:
+    print(f"Transferred to: {result['agent_name']}")
+```
+
+### Get Active Transfers
+
+```python
+from frappe_whatsapp_chatbot.api import get_active_transfers
+
+# Get all active transfers
+transfers = get_active_transfers()
+
+# Filter by agent
+my_transfers = get_active_transfers(agent="agent@example.com")
+```
+
+### Using in Server Scripts
+
+Transfer a conversation when a keyword like "agent" is detected:
+
+```python
+# Server Script: transfer_to_agent
+# Script Type: API
+
+phone_number = doc.get("from") or doc.from_
+
+# Transfer to agent
+from frappe_whatsapp_chatbot.api import transfer_to_agent
+transfer_to_agent(
+    phone_number=phone_number,
+    notes="Customer requested human agent"
+)
+
+response = "You've been connected to a human agent. They'll respond shortly."
+```
+
 ## Events & Signals
 
 Currently, the chatbot doesn't emit custom events, but you can:

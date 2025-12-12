@@ -82,7 +82,22 @@ class ChatbotProcessor:
         if self.phone_number in excluded:
             return False
 
+        # Check if transferred to agent
+        if self.is_transferred_to_agent():
+            return False
+
         return True
+
+    def is_transferred_to_agent(self):
+        """Check if this conversation has been transferred to a human agent."""
+        try:
+            return frappe.db.exists("WhatsApp Agent Transfer", {
+                "phone_number": self.phone_number,
+                "status": "Active"
+            })
+        except Exception:
+            # If doctype doesn't exist yet, don't block processing
+            return False
 
     def process(self):
         """Process the incoming message."""
