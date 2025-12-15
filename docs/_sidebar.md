@@ -18,6 +18,7 @@
   - [Document Creation](features/document-creation.md)
   - [Conditional Branching](features/branching.md)
   - [Session Management](features/sessions.md)
+  - [Agent Transfer](features/agent-transfer.md)
 
 - Examples
   - [FAQ Bot](examples/faq-bot.md)

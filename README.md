@@ -27,7 +27,8 @@ Supports keyword-based replies, multi-step conversation flows with dynamic scrip
 - **WhatsApp Flow Integration**: Send native WhatsApp Flows for rich form experiences
 - **Dynamic Script Responses**: Execute Python scripts to generate dynamic responses (e.g., check order status from database)
 - **Document Creation**: Automatically create Frappe documents from collected flow data
-- **Optional AI Integration**: OpenAI and Anthropic support for intelligent responses
+- **Agent Transfer**: Transfer conversations to human agents and pause chatbot
+- **Optional AI Integration**: OpenAI, Anthropic, and Google AI support for intelligent responses
 - **Session Management**: Track user conversations with automatic timeout handling
 - **Business Hours**: Restrict bot responses to business hours
 - **Flexible Configuration**: All settings managed via Frappe Desk UI
@@ -391,6 +392,90 @@ When a message is received, the chatbot processes it in this order:
 
 ---
 
+## Agent Transfer (Pause Chatbot)
+
+Transfer conversations to human agents and pause chatbot responses for specific users.
+
+### How It Works
+
+When a conversation is transferred to an agent:
+1. Chatbot stops responding to that phone number
+2. Human agent handles the conversation manually
+3. When resolved, resume chatbot for that number
+
+### Transfer to Agent
+
+**From a Flow Script:**
+```python
+from frappe_whatsapp_chatbot.frappe_whatsapp_chatbot.doctype.whatsapp_agent_transfer.whatsapp_agent_transfer import WhatsAppAgentTransfer
+
+# Transfer to agent
+WhatsAppAgentTransfer.transfer_to_agent(
+    phone_number="+919876543210",
+    whatsapp_account="Main WhatsApp",  # optional
+    agent="agent@company.com",          # optional - assign to specific user
+    notes="Customer needs help with billing"  # optional
+)
+
+response = "I'm connecting you with a support agent. They'll respond shortly."
+```
+
+**From Keyword Reply Script:**
+```python
+# Keyword: "agent", "human", "talk to someone"
+from frappe_whatsapp_chatbot.frappe_whatsapp_chatbot.doctype.whatsapp_agent_transfer.whatsapp_agent_transfer import WhatsAppAgentTransfer
+
+WhatsAppAgentTransfer.transfer_to_agent(
+    phone_number=doc.from,
+    whatsapp_account=doc.whatsapp_account
+)
+
+response = "A human agent will assist you shortly. Please wait."
+```
+
+### Resume Chatbot
+
+**From Code:**
+```python
+from frappe_whatsapp_chatbot.frappe_whatsapp_chatbot.doctype.whatsapp_agent_transfer.whatsapp_agent_transfer import WhatsAppAgentTransfer
+
+# Resume chatbot for this number
+WhatsAppAgentTransfer.resume_chatbot(
+    phone_number="+919876543210",
+    whatsapp_account="Main WhatsApp"  # optional
+)
+```
+
+**From Frappe Desk:**
+1. Go to **WhatsApp Agent Transfer** list
+2. Find the active transfer record
+3. Change **Status** to "Resumed"
+4. Save
+
+### Check Transfer Status
+
+```python
+from frappe_whatsapp_chatbot.frappe_whatsapp_chatbot.doctype.whatsapp_agent_transfer.whatsapp_agent_transfer import WhatsAppAgentTransfer
+
+# Check if number is transferred
+is_transferred = WhatsAppAgentTransfer.is_transferred("+919876543210")
+```
+
+### WhatsApp Agent Transfer Fields
+
+| Field | Description |
+|-------|-------------|
+| Phone Number | Customer's phone number |
+| WhatsApp Account | Associated WhatsApp account |
+| Status | **Active** (paused) or **Resumed** (chatbot active) |
+| Agent | User handling the conversation |
+| Notes | Reason for transfer or context |
+| Transferred At | When transfer was created |
+| Resumed At | When chatbot was resumed |
+| Resumed By | User who resumed the chatbot |
+
+---
+
 ## DocTypes Reference
 
 | DocType | Type | Purpose |
@@ -403,6 +488,7 @@ When a message is received, the chatbot processes it in this order:
 | WhatsApp Session Message | Child Table | Message history within sessions |
 | WhatsApp AI Context | List | Knowledge base for AI responses |
 | WhatsApp Excluded Number | Child Table | Numbers to exclude from bot |
+| WhatsApp Agent Transfer | List | Track agent transfers (pause chatbot) |
 
 ---
 
