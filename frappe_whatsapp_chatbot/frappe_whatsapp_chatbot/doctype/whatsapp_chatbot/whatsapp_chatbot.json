@@ -127,10 +127,17 @@
    "options": "\nOpenAI\nAnthropic\nGoogle\nCustom"
   },
   {
-   "depends_on": "eval:doc.enable_ai",
+   "depends_on": "eval:doc.enable_ai && doc.ai_provider!='Custom'",
    "fieldname": "ai_api_key",
    "fieldtype": "Password",
    "label": "AI API Key"
+  },
+  {
+   "depends_on": "eval:doc.enable_ai && doc.ai_provider=='Custom'",
+   "fieldname": "ai_custom_endpoint",
+   "fieldtype": "Data",
+   "label": "Custom AI Endpoint URL",
+   "description": "Full URL to POST the message (e.g. https://api.mysite.com/webhook/ai)"
   },
   {
    "fieldname": "column_break_ai",

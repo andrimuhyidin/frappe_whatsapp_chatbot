@@ -335,6 +335,31 @@ class AIResponder:
 
     def custom_response(self, message, conversation_history):
         """Generate response using custom endpoint."""
-        # Placeholder for custom AI provider integration
-        frappe.log_error("Custom AI provider not implemented")
-        return None
+        try:
+            import requests
+            endpoint = self.settings.ai_custom_endpoint
+            if not endpoint:
+                frappe.log_error("Custom AI endpoint not configured")
+                return None
+
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}" if self.api_key else ""
+            }
+
+            payload = {
+                "message": message,
+                "history": conversation_history,
+                "phone_number": self.phone_number,
+                "context": self.build_context()
+            }
+
+            response = requests.post(endpoint, json=payload, headers=headers, timeout=30)
+            response.raise_for_status()
+            
+            data = response.json()
+            return data.get("response") or data.get("message") or str(data)
+
+        except Exception as e:
+            frappe.log_error(f"Custom AI provider error: {str(e)}")
+            return None
