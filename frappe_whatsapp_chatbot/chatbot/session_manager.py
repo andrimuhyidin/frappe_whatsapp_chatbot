@@ -124,6 +124,73 @@ class SessionManager:
             frappe.log_error(f"SessionManager get_conversation_history error: {str(e)}")
             return []
 
+    def get_conversation_summary(self, max_messages=10):
+        """
+        Get a summarized context for long conversations.
+        Returns last N messages with older ones summarized.
+        """
+        try:
+            # Check cache first
+            cache_key = f"wa_session_summary:{self.phone_number}:{self.account}"
+            cached = frappe.cache.get(cache_key)
+            if cached:
+                return cached
+            
+            # Get all recent messages (more than we need for summary)
+            messages = frappe.get_all(
+                "WhatsApp Message",
+                filters={
+                    "whatsapp_account": self.account,
+                    "content_type": "text"
+                },
+                or_filters=[
+                    ["from", "=", self.phone_number],
+                    ["to", "=", self.phone_number]
+                ],
+                fields=["type", "message", "creation"],
+                order_by="creation desc",
+                limit=50
+            )
+            
+            if len(messages) <= max_messages:
+                # Not enough messages to summarize, return as-is
+                return self.get_conversation_history(max_messages)
+            
+            # Split: recent messages (detailed) + older messages (summarized)
+            recent = messages[:max_messages]
+            older = messages[max_messages:30]  # Summarize next 20
+            
+            # Build simple summary of older messages
+            summary_parts = []
+            user_topics = set()
+            
+            for msg in older:
+                # Extract key topics (simple approach)
+                words = msg.message.lower().split()[:5]
+                user_topics.update(words)
+            
+            if user_topics:
+                summary = f"[Earlier context: User discussed topics including: {', '.join(list(user_topics)[:10])}]"
+                summary_parts.append({"direction": "System", "message": summary, "timestamp": None})
+            
+            # Add recent messages
+            history = summary_parts
+            for msg in reversed(recent):
+                history.append({
+                    "direction": "Incoming" if msg.type == "Incoming" else "Outgoing",
+                    "message": msg.message,
+                    "timestamp": msg.creation
+                })
+            
+            # Cache for 5 minutes
+            frappe.cache.set(cache_key, history, expires_in_sec=300)
+            
+            return history
+            
+        except Exception as e:
+            frappe.log_error(f"SessionManager get_conversation_summary error: {str(e)}")
+            return self.get_conversation_history(max_messages)
+
 
 def cleanup_expired_sessions():
     """Scheduled job to clean up expired sessions."""

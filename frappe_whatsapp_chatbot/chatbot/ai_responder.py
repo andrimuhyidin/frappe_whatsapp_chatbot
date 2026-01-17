@@ -1,5 +1,6 @@
 import frappe
 import json
+import hashlib
 
 
 class AIResponder:
@@ -16,28 +17,58 @@ class AIResponder:
         self.temperature = settings.ai_temperature or 0.7
         self.include_history = settings.ai_include_history or False
         self.history_limit = settings.ai_history_limit or 4
+        self.cache_ttl = 300  # 5 minutes cache for identical queries
+        self.retry_count = 0
+        self.max_retries = 3
+
+    def _get_cache_key(self, message):
+        """Generate cache key for response caching."""
+        # Hash the message + phone for uniqueness
+        key_data = f"{self.phone_number}:{message.lower().strip()}"
+        return f"wa_ai_response:{hashlib.md5(key_data.encode()).hexdigest()}"
 
     def generate_response(self, message, conversation_history=None):
-        """Generate AI response for message."""
+        """Generate AI response for message with caching."""
         if not self.api_key:
             frappe.log_error("AI API key not configured")
             return None
 
         self.current_message = message  # Store for context filtering
 
+        # Check cache first
+        cache_key = self._get_cache_key(message)
+        cached_response = frappe.cache.get(cache_key)
+        if cached_response:
+            return cached_response
+
+        response = None
         try:
             if self.provider == "OpenAI":
-                return self.openai_response(message, conversation_history)
+                response = self.openai_response(message, conversation_history)
             elif self.provider == "Anthropic":
-                return self.anthropic_response(message, conversation_history)
+                response = self.anthropic_response(message, conversation_history)
             elif self.provider == "Google":
-                return self.google_response(message, conversation_history)
+                response = self.google_response(message, conversation_history)
             elif self.provider == "Custom":
-                return self.custom_response(message, conversation_history)
+                response = self.custom_response(message, conversation_history)
+            
+            # Cache successful response
+            if response:
+                frappe.cache.set(cache_key, response, expires_in_sec=self.cache_ttl)
+                return response
+                
         except Exception as e:
-            frappe.log_error(f"AIResponder generate_response error: {str(e)}")
+            self.retry_count += 1
+            frappe.log_error(f"AIResponder generate_response error (attempt {self.retry_count}): {str(e)}")
+            
+            # Retry logic
+            if self.retry_count < self.max_retries:
+                return self.generate_response(message, conversation_history)
+            else:
+                frappe.log_error(f"AIResponder max retries exceeded for: {message[:50]}")
 
         return None
+
 
     def build_context(self):
         """Build context from AI Context documents."""

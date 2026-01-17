@@ -7,8 +7,12 @@
  "field_order": [
   "topic",
   "keywords",
+  "category",
   "content",
-  "is_active"
+  "is_active",
+  "section_break_analytics",
+  "usage_count",
+  "last_matched"
  ],
  "fields": [
   {
@@ -24,6 +28,13 @@
    "description": "e.g. price, cost, expensive, tour package"
   },
   {
+   "fieldname": "category",
+   "fieldtype": "Data",
+   "label": "Category",
+   "in_list_view": 1,
+   "in_standard_filter": 1
+  },
+  {
    "fieldname": "content",
    "fieldtype": "Text Editor",
    "label": "Answer / Content",
@@ -34,6 +45,25 @@
    "fieldname": "is_active",
    "fieldtype": "Check",
    "label": "Is Active"
+  },
+  {
+   "fieldname": "section_break_analytics",
+   "fieldtype": "Section Break",
+   "label": "Analytics",
+   "collapsible": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "usage_count",
+   "fieldtype": "Int",
+   "label": "Usage Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_matched",
+   "fieldtype": "Datetime",
+   "label": "Last Matched",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
