@@ -6,6 +6,16 @@ app_email = "shrip.dev@gmail.com"
 app_license = "MIT with Commons Clause"
 required_apps = ["shridarpatil/frappe_whatsapp"]
 
+# Module Setup
+# ------------
+setup = {
+    "module_icon": "cpu",
+    "module_name": "Frappe Whatsapp Chatbot",
+    "type": "module",
+    "color": "#9B59B6",
+    "category": "Integrations"
+}
+
 # Document Events
 doc_events = {
     "WhatsApp Message": {
