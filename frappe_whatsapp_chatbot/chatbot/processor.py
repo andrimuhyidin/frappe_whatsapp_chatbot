@@ -472,12 +472,18 @@ def process_incoming_message(doc, method=None):
         _processing_messages.add(doc_name)
 
         try:
-            # Process synchronously - this is fast enough and more reliable
-            processor = ChatbotProcessor(message_data)
-            processor.process()
+            # Process using background job to prevent blocking the message save
+            # This is critical for v16 scalability and handling AI latencies
+            frappe.enqueue(
+                "frappe_whatsapp_chatbot.chatbot.processor.run_processor",
+                message_data=message_data,
+                queue="default",
+                now=frappe.flags.in_test
+            )
         finally:
-            # Clean up processing flag
-            _processing_messages.discard(doc_name)
+            # Note: We don't discard here because the background job will do it
+            # This keeps the message locked until the background job finishes
+            pass
 
     except Exception as e:
         # Log error but NEVER re-raise - we must not break the incoming message save
