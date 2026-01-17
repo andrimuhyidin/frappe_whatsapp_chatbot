@@ -70,6 +70,32 @@ class AIResponder:
                 except Exception as e:
                     frappe.log_error(f"AIResponder context '{ctx.title}' error: {str(e)}")
                     continue
+            
+            # --- Knowledge Base Integration (RAG Lite) ---
+            try:
+                # Simple keyword search in Knowledge Base
+                # In production, this should be Vector Search
+                kb_items = frappe.get_all("WhatsApp Knowledge Base", 
+                                       filters={"is_active": 1},
+                                       fields=["topic", "content", "keywords"])
+                
+                relevant_kb = []
+                for kb in kb_items:
+                    # Check if keywords match message
+                    if kb.keywords:
+                        kb_kws = [k.strip().lower() for k in kb.keywords.split(",") if k.strip()]
+                        if any(kw in message_lower for kw in kb_kws):
+                            relevant_kb.append(f"Q: {kb.topic}\nA: {kb.content}")
+                    # Also check topic string match (simple)
+                    elif kb.topic.lower() in message_lower:
+                        relevant_kb.append(f"Q: {kb.topic}\nA: {kb.content}")
+                
+                if relevant_kb:
+                    context_parts.append("[Knowledge Base]\n" + "\n---\n".join(relevant_kb))
+                    
+            except Exception as e:
+                frappe.log_error(f"Knowledge Base Search Error: {e}")
+            # ---------------------------------------------
 
             return "\n\n".join(context_parts) if context_parts else ""
 
