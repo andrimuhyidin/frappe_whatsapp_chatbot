@@ -1,3 +1,4 @@
+from . import __version__ as app_version
 app_name = "frappe_whatsapp_chatbot"
 app_title = "Frappe WhatsApp Chatbot"
 app_publisher = "Shridhar Patil"
