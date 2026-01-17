@@ -5,7 +5,7 @@
    "number_card_name": "Active AI Sessions"
   }
  ],
- "content": "[{\"id\":\"ai-section\",\"type\":\"header\",\"data\":{\"text\":\"AI & Intelligence\",\"col\":12}},{\"id\":\"chatbot-config\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Chatbot Config\",\"col\":3}},{\"id\":\"knowledge-base\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Knowledge Base\",\"col\":3}},{\"id\":\"session-section\",\"type\":\"header\",\"data\":{\"text\":\"Session Management\",\"col\":12}},{\"id\":\"chatbot-session\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Chatbot Session\",\"col\":3}}]",
+ "content": "[{\"id\":\"ai-section\",\"type\":\"header\",\"data\":{\"text\":\"AI & Intelligence\",\"col\":12}},{\"id\":\"whatsapp-chatbot\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Chatbot\",\"col\":3}},{\"id\":\"whatsapp-ai-context\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp AI Context\",\"col\":3}},{\"id\":\"whatsapp-knowledge-base\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Knowledge Base\",\"col\":3}},{\"id\":\"flow-section\",\"type\":\"header\",\"data\":{\"text\":\"Flows & Keywords\",\"col\":12}},{\"id\":\"whatsapp-chatbot-flow\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Chatbot Flow\",\"col\":3}},{\"id\":\"whatsapp-keyword-reply\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Keyword Reply\",\"col\":3}},{\"id\":\"session-section\",\"type\":\"header\",\"data\":{\"text\":\"Session Management\",\"col\":12}},{\"id\":\"whatsapp-chatbot-session\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Chatbot Session\",\"col\":3}},{\"id\":\"whatsapp-agent-transfer\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"WhatsApp Agent Transfer\",\"col\":3}}]",
  "creation": "2026-01-17 20:30:00.000000",
  "custom_blocks": [],
  "docstatus": 0,
@@ -28,11 +28,21 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "WhatsApp Chatbot Config",
+   "label": "WhatsApp Chatbot",
    "link_count": 0,
-   "link_to": "WhatsApp Chatbot Config",
+   "link_to": "WhatsApp Chatbot",
    "link_type": "DocType",
    "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WhatsApp AI Context",
+   "link_count": 0,
+   "link_to": "WhatsApp AI Context",
+   "link_type": "DocType",
+   "onboard": 0,
    "type": "Link"
   },
   {
@@ -41,6 +51,34 @@
    "label": "WhatsApp Knowledge Base",
    "link_count": 0,
    "link_to": "WhatsApp Knowledge Base",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Flows & Keywords",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WhatsApp Chatbot Flow",
+   "link_count": 0,
+   "link_to": "WhatsApp Chatbot Flow",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WhatsApp Keyword Reply",
+   "link_count": 0,
+   "link_to": "WhatsApp Keyword Reply",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -62,15 +100,25 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "WhatsApp Agent Transfer",
+   "link_count": 0,
+   "link_to": "WhatsApp Agent Transfer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2026-01-17 20:30:00.000000",
+ "modified": "2026-01-17 21:10:00.000000",
  "modified_by": "Administrator",
  "module": "Frappe Whatsapp Chatbot",
  "name": "WhatsApp AI",
  "owner": "Administrator",
  "parent": null,
- "public": 1,
+ "public": 0,
  "quick_lists": [],
  "roles": [],
  "sequence_id": 3,
@@ -78,16 +126,35 @@
   {
    "color": "Purple",
    "format": "{} Enabled",
-   "label": "WhatsApp Chatbot Config",
-   "link_to": "WhatsApp Chatbot Config",
+   "label": "WhatsApp Chatbot",
+   "link_to": "WhatsApp Chatbot",
    "stats_filter": "{\"enable_chatbot\": 1}",
    "type": "DocType"
   },
   {
    "color": "Green",
+   "format": "{} Contexts",
+   "label": "WhatsApp AI Context",
+   "link_to": "WhatsApp AI Context",
+   "type": "DocType"
+  },
+  {
+   "color": "Yellow",
    "format": "{} Articles",
    "label": "WhatsApp Knowledge Base",
    "link_to": "WhatsApp Knowledge Base",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "label": "WhatsApp Chatbot Flow",
+   "link_to": "WhatsApp Chatbot Flow",
+   "type": "DocType"
+  },
+  {
+   "color": "Cyan",
+   "label": "WhatsApp Keyword Reply",
+   "link_to": "WhatsApp Keyword Reply",
    "type": "DocType"
   },
   {
@@ -95,6 +162,14 @@
    "format": "{} Active",
    "label": "WhatsApp Chatbot Session",
    "link_to": "WhatsApp Chatbot Session",
+   "stats_filter": "{\"status\": \"Active\"}",
+   "type": "DocType"
+  },
+  {
+   "color": "Red",
+   "format": "{} Transferred",
+   "label": "WhatsApp Agent Transfer",
+   "link_to": "WhatsApp Agent Transfer",
    "stats_filter": "{\"status\": \"Active\"}",
    "type": "DocType"
   }

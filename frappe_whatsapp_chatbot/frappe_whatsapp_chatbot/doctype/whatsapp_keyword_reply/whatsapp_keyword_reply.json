@@ -107,7 +107,7 @@
             "fieldtype": "Select",
             "in_list_view": 1,
             "label": "Response Type",
-            "options": "Text\nTemplate\nMedia\nFlow\nScript",
+            "options": "Text\nTemplate\nMedia\nFlow\nScript\nCustom",
             "reqd": 1
         },
         {
@@ -183,8 +183,8 @@
         {
             "fieldname": "section_break_script",
             "fieldtype": "Section Break",
-            "label": "Script Configuration",
-            "depends_on": "eval:doc.response_type=='Script'",
+            "label": "Script / Custom Configuration",
+            "depends_on": "eval:doc.response_type=='Script' || doc.response_type=='Custom'",
             "collapsible": 1
         },
         {
@@ -194,6 +194,14 @@
             "depends_on": "eval:doc.response_type=='Script'",
             "mandatory_depends_on": "eval:doc.response_type=='Script'",
             "description": "Server Script name (API type) or method path (e.g., myapp.api.escalate_to_agent)"
+        },
+        {
+             "fieldname": "custom_endpoint",
+             "fieldtype": "Data",
+             "label": "Custom Endpoint",
+             "depends_on": "eval:doc.response_type=='Custom'",
+             "mandatory_depends_on": "eval:doc.response_type=='Custom'",
+             "description": "Dotted path to a python method that returns the response message dict."
         },
         {
             "fieldname": "section_break_conditions",

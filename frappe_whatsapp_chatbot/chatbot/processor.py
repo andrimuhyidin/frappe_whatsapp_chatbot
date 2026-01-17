@@ -313,6 +313,9 @@ class ChatbotProcessor:
         elif keyword_doc.response_type == "Script":
             return self.execute_script(keyword_doc.script)
 
+        elif keyword_doc.response_type == "Custom":
+            return self.execute_script(keyword_doc.custom_endpoint)
+
         return None
 
     def execute_script(self, script):
