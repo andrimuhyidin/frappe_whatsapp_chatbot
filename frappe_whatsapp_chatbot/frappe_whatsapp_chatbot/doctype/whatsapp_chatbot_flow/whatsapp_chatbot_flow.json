@@ -195,7 +195,7 @@
     "links": [],
     "modified": "2024-01-01 00:00:00.000000",
     "modified_by": "Administrator",
-    "module": "Frappe WhatsApp Chatbot",
+    "module": "Frappe Whatsapp Chatbot",
     "name": "WhatsApp Chatbot Flow",
     "naming_rule": "By fieldname",
     "owner": "Administrator",
