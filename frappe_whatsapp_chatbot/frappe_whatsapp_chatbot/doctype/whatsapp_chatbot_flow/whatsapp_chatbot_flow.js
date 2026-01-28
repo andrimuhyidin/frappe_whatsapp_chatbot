@@ -5,6 +5,10 @@ frappe.ui.form.on('WhatsApp Chatbot Flow', {
     refresh: function(frm) {
         // Update grid column visibility on form load
         frm.trigger('update_steps_grid_columns');
+
+        frm.add_custom_button(__('Visual Builder'), () => {
+            frappe.set_route('whatsapp-flow-builder', frm.doc.name);
+        }, __('Actions'));
     },
 
     update_steps_grid_columns: function(frm) {

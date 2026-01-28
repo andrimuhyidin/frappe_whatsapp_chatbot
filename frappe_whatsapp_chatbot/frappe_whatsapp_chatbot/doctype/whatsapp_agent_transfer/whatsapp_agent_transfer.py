@@ -7,6 +7,13 @@ from frappe.utils import now_datetime
 
 
 class WhatsAppAgentTransfer(Document):
+    """
+    WhatsApp Agent Transfer for human takeover.
+    
+    Manages handoff from chatbot to human agents with transfer
+    status tracking and conversation resumption capabilities.
+    """
+
     def before_save(self):
         # If status changed to Resumed, record when and by whom
         if self.has_value_changed("status") and self.status == "Resumed":

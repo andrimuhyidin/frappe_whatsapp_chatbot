@@ -3,6 +3,13 @@ from frappe.model.document import Document
 
 
 class WhatsAppKeywordReply(Document):
+    """
+    WhatsApp Keyword Reply for trigger-based responses.
+    
+    Configures automatic replies triggered by specific keywords
+    with support for exact match, contains, and regex patterns.
+    """
+
     def validate(self):
         self.validate_keywords()
         self.validate_response()

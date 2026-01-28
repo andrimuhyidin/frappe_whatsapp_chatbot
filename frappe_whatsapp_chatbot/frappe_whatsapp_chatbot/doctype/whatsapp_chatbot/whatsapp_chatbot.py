@@ -3,6 +3,13 @@ from frappe.model.document import Document
 
 
 class WhatsAppChatbot(Document):
+    """
+    WhatsApp Chatbot configuration for automated responses.
+    
+    Central configuration for AI-powered or rule-based chatbots
+    with business hours, AI provider settings, and response templates.
+    """
+
     def validate(self):
         if self.enable_ai:
             if not self.ai_provider:

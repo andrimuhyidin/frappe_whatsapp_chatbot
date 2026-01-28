@@ -3,6 +3,13 @@ from frappe.model.document import Document
 
 
 class WhatsAppAIContext(Document):
+    """
+    WhatsApp AI Context for providing chatbot knowledge.
+    
+    Defines context sources for AI responses including static
+    text and dynamic DocType queries for intelligent replies.
+    """
+
     def validate(self):
         if self.context_type == "Static Text" and not self.static_content:
             frappe.throw("Please enter Static Content for Static Text context type")

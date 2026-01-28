@@ -7,6 +7,17 @@ app_email = "shrip.dev@gmail.com"
 app_license = "MIT with Commons Clause"
 required_apps = ["shridarpatil/frappe_whatsapp"]
 
+# Each item in the list will be shown as an app in the apps page
+add_to_apps_screen = [
+	{
+		"name": "frappe_whatsapp_chatbot",
+		"logo": "/assets/frappe_whatsapp_chatbot/images/logo.png",
+		"title": "WhatsApp Chatbot",
+		"route": "/app/whatsapp-ai",
+		"description": "AI-powered WhatsApp chatbot management"
+	}
+]
+
 # Module Setup
 # ------------
 setup = {

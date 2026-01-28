@@ -3,6 +3,13 @@ from frappe.model.document import Document
 
 
 class WhatsAppChatbotSession(Document):
+    """
+    WhatsApp Chatbot Session for tracking active conversations.
+    
+    Manages individual user sessions with conversation state,
+    message history, and flow progress for personalized interactions.
+    """
+
     def before_save(self):
         # Update last_activity on every save
         if self.status == "Active":

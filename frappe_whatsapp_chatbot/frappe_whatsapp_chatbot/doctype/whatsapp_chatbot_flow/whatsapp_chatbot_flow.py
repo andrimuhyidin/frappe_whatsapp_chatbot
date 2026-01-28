@@ -3,6 +3,13 @@ from frappe.model.document import Document
 
 
 class WhatsAppChatbotFlow(Document):
+    """
+    WhatsApp Chatbot Flow for guided conversations.
+    
+    Defines multi-step conversation flows with branching logic,
+    data collection, and completion actions for structured interactions.
+    """
+
     def validate(self):
         self.validate_steps()
         self.validate_completion_action()

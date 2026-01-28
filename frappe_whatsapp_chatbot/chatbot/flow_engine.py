@@ -152,12 +152,8 @@ class FlowEngine:
                         frappe.db.commit()
                         return error or current_step.validation_error or "Invalid input. Please try again."
                     else:
-                        # Max retries reached, cancel flow
-                        session.status = "Cancelled"
-                        session.completed_at = datetime.now()
-                        session.save(ignore_permissions=True)
-                        frappe.db.commit()
-                        return "Too many invalid attempts. Please start again."
+                        # Max retries reached, transfer to agent
+                        return self.transfer_to_agent(session, "Too many invalid attempts.")
 
                 # Store input
                 if current_step.store_as:
@@ -207,6 +203,10 @@ class FlowEngine:
             session.last_activity = datetime.now()
             session.save(ignore_permissions=True)
             frappe.db.commit()
+
+            # Determine next step
+            if next_step.input_type == "Transfer to Agent":
+                return self.transfer_to_agent(session, "User requested agent transfer.")
 
             # Build and return next step message
             response = self.build_step_message(next_step, session)
@@ -534,31 +534,7 @@ class FlowEngine:
         return session_data
 
     def run_response_script(self, script, data, session):
-        """Run script to generate dynamic response message.
-
-        The script should set 'response' variable with the message to return.
-        Response can be a string or dict (for buttons/templates).
-
-        Available in script:
-            - data: dict of collected session data
-            - frappe: frappe module for database queries
-            - json: json module
-            - session: the current session document
-            - phone_number: user's phone number
-
-        Example 1 - Simple text:
-            order = frappe.get_doc('Sales Order', data.get('order_id'))
-            response = f"Order status: {order.status}"
-
-        Example 2 - Dynamic buttons (invoices):
-            invoices = frappe.get_all('Sales Invoice',
-                filters={'customer': data.get('customer')},
-                fields=['name', 'grand_total'],
-                limit=10
-            )
-            buttons = [{"id": inv.name, "title": inv.name, "description": f"₹{inv.grand_total}"} for inv in invoices]
-            response = {"message": "Select an invoice:", "content_type": "interactive", "buttons": json.dumps(buttons)}
-        """
+        # ... (rest of method)
         try:
             eval_globals = {
                 "data": data,
@@ -573,3 +549,28 @@ class FlowEngine:
         except Exception as e:
             frappe.log_error(f"FlowEngine run_response_script error: {str(e)}")
             return None
+
+    def transfer_to_agent(self, session, reason=None):
+        """Transfer the conversation to a human agent."""
+        try:
+            # Create transfer record
+            transfer = frappe.get_doc({
+                "doctype": "WhatsApp Agent Transfer",
+                "phone_number": session.phone_number,
+                "whatsapp_account": session.whatsapp_account,
+                "status": "Active",
+                "notes": reason or "Transferred from AI Chatbot"
+            })
+            transfer.insert(ignore_permissions=True)
+            
+            # Update session
+            session.status = "Handed Over"
+            session.completed_at = datetime.now()
+            session.save(ignore_permissions=True)
+            
+            frappe.db.commit()
+            
+            return "Saya akan menghubungkan Anda dengan agen kami. Mohon tunggu sebentar..."
+        except Exception as e:
+            frappe.log_error(f"FlowEngine transfer_to_agent error: {str(e)}")
+            return "Maaf, terjadi kesalahan saat menghubungkan ke agen. Silakan coba lagi nanti."
