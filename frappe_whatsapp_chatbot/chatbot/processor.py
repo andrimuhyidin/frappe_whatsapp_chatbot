@@ -1,9 +1,38 @@
 import frappe
 from frappe import _
+from frappe.utils import cint
 from datetime import datetime
 
 # Flag to prevent recursive processing
 _processing_messages = set()
+
+
+def _check_chatbot_rate_limit(phone_number: str, limit_per_minute: int = 10) -> bool:
+    """
+    Check if a phone number has exceeded chatbot response rate limit.
+    
+    Security: Prevents abuse of chatbot by limiting responses per phone number.
+    
+    Args:
+        phone_number: The sender's phone number
+        limit_per_minute: Maximum chatbot responses per minute (default 10)
+        
+    Returns:
+        True if within limit, False if exceeded
+    """
+    cache_key = f"chatbot_rate_limit:{phone_number}"
+    current_count = cint(frappe.cache.get(cache_key) or 0)
+    
+    if current_count >= limit_per_minute:
+        frappe.log_error(
+            f"Chatbot rate limit exceeded for phone: {phone_number} ({current_count} messages)",
+            "Chatbot Rate Limit"
+        )
+        return False
+    
+    # Increment counter with 60 second expiry
+    frappe.cache.set(cache_key, current_count + 1, expires_in_sec=60)
+    return True
 
 
 class ChatbotProcessor:
@@ -458,6 +487,12 @@ def process_incoming_message(doc, method=None):
             if not enabled:
                 return
         except Exception:
+            return
+
+        # Security: Check rate limit to prevent abuse
+        phone_number = getattr(doc, "from", None) or getattr(doc, "from_", None)
+        if phone_number and not _check_chatbot_rate_limit(phone_number):
+            # Rate limit exceeded, skip processing silently
             return
 
         # Extract message data
