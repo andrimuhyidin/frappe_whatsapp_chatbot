@@ -5,7 +5,11 @@ app_publisher = "Shridhar Patil"
 app_description = "WhatsApp Chatbot for Frappe with keyword replies, conversation flows, and optional AI"
 app_email = "shrip.dev@gmail.com"
 app_license = "MIT with Commons Clause"
-required_apps = ["shridarpatil/frappe_whatsapp"]
+# Required Apps - frappe_whatsapp is the base WhatsApp integration
+required_apps = ["frappe_whatsapp"]
+
+# Optional dependencies (checked at runtime)
+optional_apps = ["whatsapp_chat"]  # For agent handoff integration
 
 # Each item in the list will be shown as an app in the apps page
 add_to_apps_screen = [
